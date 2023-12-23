@@ -22,20 +22,16 @@ DATA_SAMPLE = "The movie was great! The plot was engaging, and the acting was su
 
 class Preprocessing():
     def preprocessing_function(self, text):
-        # preprocessing
-        text = self.Translation(text)
+        # text = self.Translation(text)
         text = self.Cleaning(text)
         text = self.CaseFolding(text)
         text = self.Tokenize(text)
-        text = self.StopwordRemoval(text)
-        text = self.Stemming(text)
+        # text = self.StopwordRemoval(text)
+        # text = self.Stemming(text)
 
         return text
     
     def Cleaning(self, text):
-
-        # Lowercase
-        text = text.lower()
 
         # Remove numbers
         text = re.sub(r"\d+", "", text)
@@ -58,67 +54,70 @@ class Preprocessing():
         return text
     
     def Translation(self, text):
-        translationEN = GoogleTranslator(source='id', target='en').translate(text)
-        # translationIN = GoogleTranslator(source='auto', target='id').translate(translationEN)
-
-        # Add space after punctuation marks
-        # translated_text = re.sub(r'([.,!?])', r'\1 ', translationIN)
-
+        translationEN = GoogleTranslator(source='auto', target='id').translate(text)
         return translationEN
     
     def CaseFolding(self, text):
         return text.lower()
     
     def Tokenize(self, text):
-        # With NLTK
-        return word_tokenize(text)
-
-        # Original
         token = text.translate(str.maketrans('','',string.punctuation)).lower()
         return token.split(' ')
 
     def StopwordRemoval(self, text):
-        # With NLTK (English Only)
-        stop_words = set(stopwords.words('english'))
+        # # With NLTK (English Only)
+        # stop_words = set(stopwords.words('english'))
 
-        filtered_sentence = [w for w in text if not w.lower() in stop_words]
-        filtered_sentence = []
+        # filtered_sentence = [w for w in text if not w.lower() in stop_words]
+        # filtered_sentence = []
 
-        for w in text:
-            if w not in stop_words:
-                filtered_sentence.append(w)
+        # for w in text:
+        #     if w not in stop_words:
+        #         filtered_sentence.append(w)
 
-        return filtered_sentence
+        # return filtered_sentence
 
         # Original
-        # factory = StopWordRemoverFactory()
-        # stopword = factory.create_stop_word_remover()
+        factory = StopWordRemoverFactory()
+        stopword = factory.create_stop_word_remover()
         
-        # text = ' '.join(text)
-        # removed = stopword.remove(text)
+        text = ' '.join(text)
+        removed = stopword.remove(text)
 
-        # return removed.split(' ')
+        return removed.split(' ')
     
     def Stemming(self, text):
         # NLTK (English)
-        snow_stemmer = SnowballStemmer(language='english')
+        # snow_stemmer = SnowballStemmer(language='english')
 
-        stemmed_sentence = []
+        # stemmed_sentence = []
 
-        for w in text:
-            stemmed_text = snow_stemmer.stem(w)
-            stemmed_sentence.append(stemmed_text)
+        # for w in text:
+        #     stemmed_text = snow_stemmer.stem(w)
+        #     stemmed_sentence.append(stemmed_text)
 
-        return stemmed_sentence
+        # return stemmed_sentence
 
         # Sastrawi (Indonesia)
-        # factory = StemmerFactory()
-        # stemmer = factory.create_stemmer()
-        
-        # text = ' '.join([str(x) for x in text])
-        # katadasar = stemmer.stem(text)
-        
-        # return katadasar
+        factory = StemmerFactory()
+        stemmer = factory.create_stemmer()
+
+        text = ' '.join(text)
+        removed = stemmer.stem(text)
+
+        return removed.split(' ')
+
+        # Create a cache for stemmed words
+        stemmed_cache = {}
+
+        def stem_word(word):
+            if word not in stemmed_cache:
+                stemmed_cache[word] = stemmer.stem(word)
+            return stemmed_cache[word]
+
+        stemmed_sentence = [stem_word(word) for word in text]
+    
+        return stemmed_sentence
 
     def ComputeTF(self, query, text, index):
         tokenText = text.split(' ')
@@ -208,41 +207,3 @@ class Preprocessing():
             tfidf.append(temp_W)
 
         return tfidf
-
-# def clean_text(text):
-
-#     # Lowercase
-#     text = text.lower()
-
-#     # Remove numbers
-#     text = re.sub(r"\d+", "", text)
-
-#     # Remove punction
-#     text = text.translate(str.maketrans("","",string.punctuation))
-
-#     # Remove whitespace leading & trailing
-#     text = text.strip()
-
-#     # Remove multiple whitespace into single whitespace
-#     text = re.sub('\s+',' ',text)
-
-#     # Remove HTML tags
-#     text = re.sub(r'<.*?>', '', text)
-
-#     # Remove special characters and numbers
-#     text = re.sub(r'[^a-zA-Z\s]', '', text)
-
-#     tokens = word_tokenize(text)
-    
-#     return tokens
-
-# def tokenize(text):
-#     return word_tokenize(text)
-
-# def translation_id(text):
-#     translationEN = GoogleTranslator(source='auto', target='en').translate(text)
-#     translationIN = GoogleTranslator(source='auto', target='id').translate(translationEN)
-
-#     # Add space after punctuation marks
-#     translated_text = re.sub(r'([.,!?])', r'\1 ', translationIN)
-#     return translated_text
