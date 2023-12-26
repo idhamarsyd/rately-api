@@ -18,6 +18,7 @@ from sklearn.feature_selection import mutual_info_classif
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.model_selection import GridSearchCV
 
 from confusion import calculate_accuracy, calculate_precision_recall_f1
 
@@ -579,6 +580,7 @@ def new_sentiment():
     training_data = Comments.get_training(session)
     testing_data = Comments.get_testing(session)
 
+
     vectorizer = TfidfVectorizer()
     preprocessor = Preprocessing()
     label_mapping = {
@@ -620,7 +622,9 @@ def new_sentiment():
     # X_train_selected = vectorizer_selected.fit_transform(training_texts)
     X_train_selected = X_train_tfidf
 
-    svm_model = SVC(kernel='rbf', decision_function_shape='ovr', random_state=42)
+    hyperparameters = {'C': 10, 'gamma': 0.1, 'kernel': 'rbf'}
+
+    svm_model = SVC(**hyperparameters, decision_function_shape='ovr', random_state=42)
     svm_model.fit(X_train_selected, training_labels)
 
     # X_test_selected = vectorizer_selected.transform(testing_texts)
